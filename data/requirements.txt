@@ -1,0 +1,10 @@
+numpy
+matplotlib
+xarray
+numba
+notebook
+nbformat
+scikit-learn
+# Optional for the large September 2026 NetCDF extension:
+# dask
+# netcdf4
