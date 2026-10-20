@@ -1,54 +1,46 @@
-# ACMAD OND IDR-only tutorial (offline)
+# ACMAD OND IDR practical
 
-**60 minutes | historical SEAS5 and CHIRPS OND rainfall (2001–2025)**
+**60-minute tutorial | Historical SEAS5 and CHIRPS OND rainfall (2001–2025)**
 
-## Quick start
+[![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/africlimate-research/ACMAD_Seasonal_Calibration/blob/main/ACMAD_OND_IDR_Offline_Practical.ipynb)
 
-1. Extract the ZIP and keep the notebook, `idr_xarray.py` and `data/` in the same folder.
-2. Install dependencies: `python -m pip install -r requirements.txt`.
-3. Start Jupyter with `jupyter notebook` and open `ACMAD_OND_IDR_Offline_Practical.ipynb`.
-4. Run all cells top to bottom. No internet, GCS credentials or local research directory required after installation.
+## Run the notebook
 
-## Included data
+### Google Colab
 
-`data/seas5_OND.npy` and `data/chirps_obs_OND.npy`: matched historical SEAS5 predictors and CHIRPS observed seasonal totals, shape (25, 12424). `data/pred_years_OND.npy`: 2001–2025. `data/y_mean_wmo_OND.npy`, `y_std_wmo_OND.npy`: WMO-referenced local moments. `data/zone_mean_wmo_OND.npy`, `zone_std_wmo_OND.npy`: zone-derived reference moments, **not** climate-zone labels. `africa_standard_extent.json`: extent only, **not** a spatial index.
+Click **Open in Google Colab** above. Run **Section 0 — Setup** first; it clones this repository and installs the required packages. Then run the remaining cells from top to bottom. Colab clears its files when the runtime disconnects, so run Setup again after reconnecting.
 
-The tutorial uses 2001–2015 for model fitting, 2016–2025 as a held-out period, 1,200 training pairs and 1,500 evaluation pairs for speed. Pooled IDR and pooled terciles are classroom approximations, not a replication of research-grade zonal LOYO calibration. The saved input has historical ensemble-mean/predictor values rather than raw ensemble members; do not infer raw ensemble probabilistic skill.
+### Run locally
 
-## September 2026 extension
+Keep the notebook, `idr_xarray.py`, `africa_standard_extent.json`, and `data/` together. Install the dependencies and start Jupyter:
 
-A September 2026 SEAS5 precipitation **NetCDF** can be used later **from a local path**; the file does not need to be uploaded. Section 5 contains an optional lazy `xarray.open_dataset(..., chunks={})` inspection cell that skips gracefully when the file is absent. Conversion from accumulated precipitation to OND totals and mapping of the 2026 forecast to the original 12,424 columns must be verified. The available data do not contain a spatial index; the bounding-box JSON alone cannot restore the mapping. The notebook deliberately does not invent OND 2026 probabilities.
+```bash
+python -m pip install -r data/requirements.txt
+jupyter notebook
+```
 
-### ROC discrimination extension
+Open `ACMAD_OND_IDR_Offline_Practical.ipynb` and run the cells from top to bottom. Historical exercises do not require internet access after dependencies are installed.
 
-Section 4 includes one-versus-rest ROC curves and AUC scores for the below-normal, near-normal, and above-normal categories using the same 2016–2025 held-out samples as Brier skill and reliability. ROC AUC assesses ranking, not probability calibration. Install `scikit-learn` from requirements.txt.
+## Included data and interpretation
 
-## Local large NetCDF provision
+`data/seas5_OND.npy` and `data/chirps_obs_OND.npy` contain matched historical SEAS5 predictors and CHIRPS observed seasonal totals (shape `(25, 12424)`). `data/pred_years_OND.npy` contains 2001–2025. The `y_mean_wmo_OND.npy` and `y_std_wmo_OND.npy` files contain WMO-referenced local moments; `zone_mean_wmo_OND.npy` and `zone_std_wmo_OND.npy` contain zone-derived reference moments, **not** climate-zone labels. `africa_standard_extent.json` provides an extent only, **not** a spatial index.
 
-In Section 5, edit `FORECAST_NC` to the absolute `.nc` path on your machine. Historical exercises run even with no 2026 file. To inspect large datasets lazily, install optional packages with `python -m pip install dask netcdf4`. Forecast aggregation, historic location alignment, forecast probability calculation and maps are **not automatically enabled** because the supplied 12,424-column historical data lack a confirmed pixel mapping and the NetCDF accumulation metadata are not yet known.
+The tutorial fits on 2001–2015 and evaluates on the held-out 2016–2025 period, using 1,200 training pairs and 1,500 evaluation pairs for speed. Pooled IDR and pooled terciles are classroom approximations, not research-grade zonal leave-one-year-out calibration. The saved SEAS5 input contains historical predictor values, not raw ensemble members; raw-ensemble probabilistic skill cannot be inferred from these files.
 
-## Running on a shared JupyterHub
+## Optional September 2026 NetCDF extension
 
-**Facilitator / admin (once):**
+Section 5 can inspect a September 2026 SEAS5 precipitation NetCDF from a local path. Set `FORECAST_NC` to the file path; the cell skips gracefully if the file is absent. Install `dask` and `netcdf4` to inspect large datasets lazily:
 
-1. Install the packages into the hub's user image or shared kernel: `pip install numpy matplotlib xarray numba scikit-learn` (add `dask netcdf4` for Section 5). The `notebook` package is not needed on a hub.
-2. Give each participant **their own copy** of the folder (notebook, `idr_xarray.py`, `data/`, `africa_standard_extent.json`). Upload the ZIP, use nbgitpuller from a Git repo, or copy from a read-only shared folder: `cp -r /path/to/shared/ACMAD_IDR_2026 ~/`. Do not ship `__pycache__/`; it contains machine-specific Numba caches.
-3. If the September 2026 NetCDF is provided, put it in one shared read-only location. Participants can then set `FORECAST_NC` in Section 5 or the environment variable `SEAS5_2026_NC`. Users should not copy the file.
+```bash
+python -m pip install dask netcdf4
+```
 
-**Participants:** open the notebook from inside your copy of the folder and run **Section 0 — Setup** first. It limits each kernel to 2 CPU threads (override with env var `IDR_THREADS`), keeps the Numba cache in `~/.cache/numba`, and reports any missing packages. If packages are missing and the admin cannot install them, run `%pip install --user <packages>` in a cell and restart the kernel.
+Forecast aggregation, location alignment, probabilities, and maps are not enabled: the historical files do not include a confirmed pixel mapping, and the NetCDF accumulation metadata must be checked first. The notebook therefore does not generate OND 2026 probabilities.
 
-Resources: each kernel uses well under 1 GB RAM. The first IDR fit takes a few seconds while Numba compiles.
+## Requirements
 
-## Running on Google Colab
+The required packages are listed in [`data/requirements.txt`](data/requirements.txt). For a shared JupyterHub, an administrator can install them in the shared environment with:
 
-Each participant runs their own Colab session, so there are no shared threads or folders to configure. Colab already includes the required packages; Section 0 installs any that are missing.
-
-**Facilitator (once):**
-
-1. Host `ACMAD_IDR_2026_hub.zip` at a public direct-download link, for example a GitHub repo (`https://github.com/ORG/REPO/raw/main/ACMAD_IDR_2026_hub.zip`) or Google Drive shared as "Anyone with the link" (`https://drive.google.com/uc?export=download&id=FILE_ID`).
-2. Paste that link into `TUTORIAL_ZIP_URL` in the Section 0 cell of the notebook.
-3. Share the notebook. Either put it on Google Drive and share it as Viewer (participants choose **Open with → Google Colaboratory**), or push it to GitHub and share `https://colab.research.google.com/github/ORG/REPO/blob/main/ACMAD_OND_IDR_Offline_Practical.ipynb`.
-
-**Participants:** open the link, choose **File → Save a copy in Drive**, then **Runtime → Run all**. If `TUTORIAL_ZIP_URL` is empty, Section 0 asks you to upload the ZIP. Colab deletes uploaded files when the session ends, so run Section 0 again after reconnecting.
-
-**2026 NetCDF on Colab:** the file is large, so upload it to Google Drive once. Participants add a shortcut to it in their own Drive and mount Drive (see the comment in Section 5).
+```bash
+python -m pip install numpy matplotlib xarray numba scikit-learn
+```
