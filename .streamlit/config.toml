@@ -1,0 +1,8 @@
+[theme]
+# The chart palette was validated against a light surface.
+base = "light"
+backgroundColor = "#fcfcfb"
+primaryColor = "#2a78d6"
+
+[browser]
+gatherUsageStats = false

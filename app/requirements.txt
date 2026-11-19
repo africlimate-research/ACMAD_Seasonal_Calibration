@@ -1,0 +1,10 @@
+# Learning app dependencies (the notebook's own requirements are in data/requirements.txt)
+# Lower bounds are the versions the app is tested with. Streamlit must be >= 1.55 at the very
+# least (Lab 5 uses st.tabs(key=..., on_change=...)); only 1.67 has been verified end to end.
+numpy
+xarray
+numba
+scikit-learn
+streamlit>=1.67,<2
+plotly>=7.1,<8
+pytest
