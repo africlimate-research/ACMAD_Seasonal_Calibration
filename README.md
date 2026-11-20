@@ -21,6 +21,25 @@ jupyter notebook
 
 Open `ACMAD_OND_IDR_Offline_Practical.ipynb` and run the cells from top to bottom. Historical exercises do not require internet access after dependencies are installed.
 
+## Interactive learning app
+
+A local Streamlit app that turns the practical into self-contained interactive labs: the data (Lab 1), how IDR works (Lab 2), terciles (Lab 3), verification scores (Lab 4), traps and illusions (Lab 5), a question bank (Lab 6) and a glossary. From the repository root:
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -r app/requirements.txt
+.venv/bin/streamlit run app/app.py          # opens http://localhost:8501
+.venv/bin/python -m pytest app/tests -q     # notebook-parity and page tests
+```
+
+Explanatory text lives in [`app/content/questions.md`](app/content/questions.md) and can be edited without touching code.
+
+## Companion notebook: check the app yourself
+
+[![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/africlimate-research/ACMAD_Seasonal_Calibration/blob/main/ACMAD_OND_IDR_App_Companion.ipynb)
+
+[`ACMAD_OND_IDR_App_Companion.ipynb`](ACMAD_OND_IDR_App_Companion.ipynb) recomputes the app's numbers and plots, lab by lab, with NumPy, Matplotlib, scikit-learn and `idr_xarray` only. It imports none of the app's code. Each section names the app page it checks, and ✓ lines show a number exactly as the app displays it at the default settings (113 checks). It needs the same packages as the original notebook and runs in about a minute. Section 6 runs the Lab 5 experiments, which are not in the original notebook. `app/tests/test_companion_notebook.py` runs it and fails if any check stops matching the app.
+
 ## Included data and interpretation
 
 `data/seas5_OND.npy` and `data/chirps_obs_OND.npy` contain matched historical SEAS5 predictors and CHIRPS observed seasonal totals (shape `(25, 12424)`). `data/pred_years_OND.npy` contains 2001–2025. The `y_mean_wmo_OND.npy` and `y_std_wmo_OND.npy` files contain WMO-referenced local moments; `zone_mean_wmo_OND.npy` and `zone_std_wmo_OND.npy` contain zone-derived reference moments, **not** climate-zone labels. `africa_standard_extent.json` provides an extent only, **not** a spatial index.
